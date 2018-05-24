@@ -1,8 +1,9 @@
 # jacob
 Web Application  for JSON response
 
-## License
-MIT
+## Document
+Extract doc / doc.zip and see the Javadoc
+
 
 ## Setup pom.xml
 ```
