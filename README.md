@@ -1,8 +1,10 @@
 # jacob
 Web Application  for JSON response
+JSONを返すことを目的とした WebFilter で処理する 簡易 Web Application
 
 ## Document
 Extract doc / doc.zip and see the Javadoc
+or [Wiki Page](../../wiki)
 
 
 ## Setup pom.xml
