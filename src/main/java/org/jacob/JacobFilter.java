@@ -25,6 +25,7 @@ public final class JacobFilter implements Filter{
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	private JsonResponder jsonResponder;
+	private JsonResponder notFoundResponder;
 
 	private String accessControlAllowsPath = "*";
 
@@ -42,6 +43,7 @@ public final class JacobFilter implements Filter{
 			accessControlAllowsPath = application.getAccessControlAllowPath();
 			logger.debug("## RequestTranslater created.");
 			jsonResponder = application.init();
+			notFoundResponder = application.get404Responder();
 			logger.debug("## JacobApplication init() end.");
 		}catch(Exception e){
 			logger.error(e.getMessage(), e);
@@ -66,6 +68,19 @@ public final class JacobFilter implements Filter{
 			httpres.addHeader("Content-Length", Integer.toString(b.length));
 			response.setCharacterEncoding("UTF-8");
 			response.getOutputStream().write(content.getBytes());
+		}else{
+			HttpServletResponse httpres = (HttpServletResponse)response;
+			httpres.setStatus(404);
+			if (notFoundResponder != null){
+				String str = notFoundResponder.answer(httpServletRequest);
+				if (str != null){
+					httpres.addHeader("Content-Type", "application/json; charset=utf-8");
+					byte[] b = str.getBytes();
+					httpres.addHeader("Content-Length", Integer.toString(b.length));
+					response.setCharacterEncoding("UTF-8");
+					response.getOutputStream().write(str.getBytes());
+				}
+			}
 		}
 	}
 	/* @see javax.servlet.Filter#destroy() */

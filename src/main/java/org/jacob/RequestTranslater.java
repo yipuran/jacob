@@ -64,6 +64,7 @@ public final class RequestTranslater implements JsonResponder{
 	private Map<String, Field> responseFiledMap = new HashMap<String, Field>();
 	private Injector injector;
 	private List<Module> moduleList = new ArrayList<Module>();
+	private int httpstatus = 200;
 	/**
 	 * コンストラクタ.
 	 * @param servletContext ServletContext
@@ -115,8 +116,10 @@ public final class RequestTranslater implements JsonResponder{
 	 */
 	@Override
 	public String answer(HttpServletRequest request){
+		httpstatus = 404;
 		String uriStr = request.getRequestURI();
 		if (map.containsKey(uriStr)){
+			httpstatus = 200;
 			JsonResponder jsonResponder = map.get(uriStr);
 			if (responseFiledMap.containsKey(uriStr)){
 				try{
@@ -126,8 +129,7 @@ public final class RequestTranslater implements JsonResponder{
 				}
 			}
 			String content = jsonResponder.answer(request);
-			HttpServletResponse httpres = response;
-			httpres.setStatus(jsonResponder.getStatus());
+			httpstatus = jsonResponder.getStatus();
 			return content;
 		}
 		return null;
@@ -140,6 +142,6 @@ public final class RequestTranslater implements JsonResponder{
 	/* @see org.jacob.JsonResponder#getStatus() */
 	@Override
 	public int getStatus() {
-		return 200;
+		return httpstatus;
 	}
 }

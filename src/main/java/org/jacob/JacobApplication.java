@@ -72,4 +72,13 @@ public abstract class JacobApplication{
 	 */
 	protected void onDestroy(){
 	}
+	/**
+	 * リクエストのURIが未登録の場合に、HTTP 404 を返す場合のJsonResponderを取得する。.
+	 * 本メソッドは null を返すようになっており、オーバライドして HTTP 404 専用のJsonResponderで	 * コンテンツを返すようにするのが目的。
+	 * オーバライドしなければ、HTTPレスポンスのコンテンツとして何も返さないで、HTTPステータス 404 を返すだけである
+	 * @return JsonResponder
+	 */
+	protected JsonResponder get404Responder(){
+		return null;
+	}
 }
