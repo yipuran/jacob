@@ -3,17 +3,19 @@
  * <pre>Webコンテナ上、Filterで実行するJSON応答アプリケーション
  * web.xml で Filter を定義、Servlet-API より HttpServletRequest を取得して
  * JSON文字列を応答として ServletResponse に返却する。
- * 有効な HTTP要求メソッドは、GET と POST のみで、それ以外の要求は無視される。
- * HTTPヘッダは、以下が自動的に付与される。
- *    Content-Type: application/json; charset=utf-8
- *    Access-Control-Allow-Origin: *
- *    Access-Control-Allow-Headers: X-Requested-With
- *    Content-Length: n
- *
+ * <br>
  * Filter は、org.jacob.JacobFilter を使用し初期化パラメータに、
  * 属性名＝"applicationClassName" に、<b>org.jacob.JacobApplication</b> の継承クラスを
  * 指定しなければならない。
  *
+ * <h4>レスポンスのHTTPヘッダ</h4>
+ * JSON 応答のアプリである為に、次の Content-Type が自動的に付与される。
+ *           Content-Type: application/json; charset=utf-8
+ * web.xml で、
+ *       Access-Control-Allow-Origin
+ *       Access-Control-Allow-Headers
+ *       Access-Control-Allow-Methods
+ * に付与について、フィルタ設定の init-param で指定する。
  * web.xml 記述例
  * jp.uran.sample.SampleApplication は、JacobApplication を継承している。
  * &lt;filter&gt;
@@ -23,7 +25,26 @@
  *         &lt;param-name&gt;applicationClassName&lt;/param-name&gt;
  *         &lt;param-value&gt;jp.uran.sample.SampleApplication&lt;/param-value&gt;
  *     &lt;/init-param&gt;
+ *     &lt;init-param&gt;
+ *         &lt;param-name&gt;accessPath&lt;/param-name&gt;
+ *         &lt;param-value&gt;*&lt;/param-value&gt;
+ *     &lt;/init-param&gt;
+ *     &lt;init-param&gt;
+ *         &lt;param-name&gt;customHeaders&lt;/param-name&gt;
+ *         &lt;param-value&gt;X-Requested-With,X-some,X-foo&lt;/param-value&gt;
+ *     &lt;/init-param&gt;
+ *     &lt;init-param&gt;
+ *         &lt;param-name&gt;allowMethods&lt;/param-name&gt;
+ *         &lt;param-value&gt;GET,POST,OPTIONS&lt;/param-value&gt;
+ *     &lt;/init-param&gt;
  * &lt;/filter&gt;
+ *
+ * 上の記述例で、応答レスポンスHTTPヘッダは、以下が付与される。
+ *    Content-Type: application/json; charset=utf-8
+ *    Access-Control-Allow-Origin: *
+ *    Access-Control-Allow-Headers: X-Requested-With,X-some,X-foo,x-requested-with,x-some,x-foo
+ *    Access-Control-Allow-Methods: GET,POST,OPTIONS
+ *    Access-Control-Request-Headers: X-Requested-With,X-some,X-foo,x-requested-with,x-some,x-foo
  * </pre>
  * <hr/>
  * <h4>Install</h4>
