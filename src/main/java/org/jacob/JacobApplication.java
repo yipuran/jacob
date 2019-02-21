@@ -59,15 +59,6 @@ public abstract class JacobApplication{
 	}
 
 	/**
-	 * HTTP content ヘッダのAccess-Control-Allow-Originパス設定.
-	 * HTTP ヘッダ Access-Control-Allow-Origin は、デフォルトで "*" を返すが
-	 * 変更したい場合、本メソッドをオーバーライドして AJAX 通信限定PATH を指定する。
-	 * @return デフォルト "*" を返す。
-	 */
-	public String getAccessControlAllowPath(){
-		return "*";
-	}
-	/**
 	 * アプリケーションコンテキスト破棄時に実行する処理.
 	 */
 	protected void onDestroy(){

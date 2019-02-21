@@ -32,8 +32,10 @@ public final class JacobFilter implements Filter{
 	private String accessControlAllowsPath;
 	private String customheaders;
 	private String allowMethods;
-	private JacobApplication application;
 	private List<String> allowMethodList;
+	private Optional<String> allowCredentials;
+	private Optional<String> exposeheaders;
+	private JacobApplication application;
 
 	/* @see javax.servlet.Filter#init(javax.servlet.FilterConfig) */
 	@Override
@@ -41,18 +43,18 @@ public final class JacobFilter implements Filter{
 		String applicationClassName = config.getInitParameter("applicationClassName");
 		accessControlAllowsPath = Optional.ofNullable(config.getInitParameter("accessPath")).orElse("*");
 		customheaders = Optional.ofNullable(config.getInitParameter("customHeaders")).orElse("Content-Type");
-		customheaders = customheaders + "," + customheaders.toLowerCase();
-		allowMethods = Optional.ofNullable(config.getInitParameter("allowMethods")).orElse("GET,POST");
+		allowMethods = Optional.ofNullable(config.getInitParameter("allowMethods")).orElse("GET,POST,OPTIONS");
 		allowMethodList = Arrays.stream(allowMethods.split(","))	.map(e->e.replaceAll(" ", "")).filter(e->e.length() > 0)
-			.map(e->e.toUpperCase()).collect(Collectors.toList());
+				.map(e->e.toUpperCase()).collect(Collectors.toList());
 		allowMethods = allowMethodList.stream().collect(Collectors.joining(","));
-
+		allowCredentials = Optional.ofNullable(config.getInitParameter("allowCredentials"))
+				.map(e->e.toLowerCase()).filter(e->"true".equals(e)||"false".equals(e));
+		exposeheaders = Optional.ofNullable(config.getInitParameter("exposeHeaders"));
 		logger.debug("## JacobApplication init() START  applicationClassName = " + applicationClassName);
 		ClassLoader loader = Thread.currentThread().getContextClassLoader();
 		try{
 			application = (JacobApplication)loader.loadClass(applicationClassName).getConstructor(new Class<?>[]{}).newInstance();
 			application.setServletContext(config.getServletContext());
-			accessControlAllowsPath = application.getAccessControlAllowPath();
 			logger.debug("## RequestTranslater created.");
 			jsonResponder = application.init();
 			notFoundResponder = application.get404Responder();
@@ -69,11 +71,20 @@ public final class JacobFilter implements Filter{
 		httpres.addHeader("Access-Control-Allow-Origin", accessControlAllowsPath);
 		httpres.addHeader("Access-Control-Allow-Headers", customheaders);
 		httpres.addHeader("Access-Control-Allow-Methods", allowMethods);
-		httpres.addHeader("Access-Control-Request-Headers", customheaders);
+		allowCredentials.ifPresent(b->{
+			httpres.addHeader("Access-Control-Allow-Credentials", b);
+		});
+		exposeheaders.ifPresent(e->{
+			httpres.addHeader("Access-Control-Expose-Headers", e);
+		});
 
 		HttpServletRequest httpServletRequest = (HttpServletRequest)request;
 		String method = httpServletRequest.getMethod().toUpperCase();
 		logger.debug("## request Method = " + method);
+		if ("OPTIONS".equals(method)){
+			httpres.setStatus(200);
+			return;
+		}
 		if (!allowMethodList.stream().anyMatch(e->e.equals(method))){
 			httpres.setStatus(400);
 			return;

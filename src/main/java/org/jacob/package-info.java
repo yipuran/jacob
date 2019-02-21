@@ -15,6 +15,8 @@
  *       Access-Control-Allow-Origin
  *       Access-Control-Allow-Headers
  *       Access-Control-Allow-Methods
+ *       Access-Control-Allow-Credentials
+ *       Access-Control-Expose-Headers
  * に付与について、フィルタ設定の init-param で指定する。
  * web.xml 記述例
  * jp.uran.sample.SampleApplication は、JacobApplication を継承している。
@@ -35,16 +37,35 @@
  *     &lt;/init-param&gt;
  *     &lt;init-param&gt;
  *         &lt;param-name&gt;allowMethods&lt;/param-name&gt;
- *         &lt;param-value&gt;GET,POST,OPTIONS&lt;/param-value&gt;
+ *         &lt;param-value&gt;GET,POST&lt;/param-value&gt;
+ *     &lt;/init-param&gt;
+ *     &lt;init-param&gt;
+ *         &lt;param-name&gt;allowCredentials&lt;/param-name&gt;
+ *         &lt;param-value&gt;true&lt;/param-value&gt;
+ *     &lt;/init-param&gt;
+ *     &lt;init-param&gt;
+ *         &lt;param-name&gt;exposeHeaders&lt;/param-name&gt;
+ *         &lt;param-value&gt;X-some,X-foo&lt;/param-value&gt;
  *     &lt;/init-param&gt;
  * &lt;/filter&gt;
  *
  * 上の記述例で、応答レスポンスHTTPヘッダは、以下が付与される。
  *    Content-Type: application/json; charset=utf-8
  *    Access-Control-Allow-Origin: *
- *    Access-Control-Allow-Headers: X-Requested-With,X-some,X-foo,x-requested-with,x-some,x-foo
+ *    Access-Control-Allow-Headers: X-Requested-With,X-some,X-foo
+ *    Access-Control-Allow-Methods: GET,POST
+ *    Access-Control-Allow-Credentials: true
+ *    Access-Control-Expose-Headers: X-some,X-foo
+ *
+ *    allowCredentials と exposeHeaders を記述しない場合、
+ *    Access-Control-Allow-Credentials と Access-Control-Expose-Headers は付与されない。
+ *    accessPath, customHeaders, allowMethods を記述しない場合、
+ *    デフォルトで
+ *    Access-Control-Allow-Origin: *
+ *    Access-Control-Allow-Headers: Content-Type
  *    Access-Control-Allow-Methods: GET,POST,OPTIONS
- *    Access-Control-Request-Headers: X-Requested-With,X-some,X-foo,x-requested-with,x-some,x-foo
+ *    が付与される。
+ *    OPTIONS は、JsonResponder でハンドリングされることはなくそのままレスポンス応答する
  * </pre>
  * <hr/>
  * <h4>Install</h4>
