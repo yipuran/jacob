@@ -1,10 +1,17 @@
 package org.jacob;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * HttpServletRequest Wrapper.
  * <PRE>
@@ -130,6 +137,59 @@ public final class RequestWrapper{
 			}
 		}
 		return array;
+	}
+	/**
+	 * HttpServletRequest から、InputStream より読出して Stringを返す。
+	 * <PRE>
+	 *  RequestWrapper requestWrapper = RequestWrapper.get(request);
+	 *  String str = requestWrapper.getBody();
+	 * </PRE>
+	 * @return 受信情報文字列
+	 */
+	public String getBody(){
+		if (request.getContentLength() < 0) return null;
+		String str = null;
+		try(InputStream in = request.getInputStream();ByteArrayOutputStream bo = new ByteArrayOutputStream()){;
+			byte[] buf = new byte[1024];
+			int length;
+			while((length=in.read(buf, 0, buf.length)) >= 0){
+				bo.write(buf, 0, length);
+			}
+			bo.flush();
+			bo.close();
+			str = bo.toString();
+		}catch(IOException ex){
+			Logger logger = LoggerFactory.getLogger(this.getClass());
+			logger.warn(ex.getMessage(), ex);;
+		}
+		return str;
+	}
+	/**
+	 * HttpServletRequest から、InputStream より読出して String（文字コード指定）を返す。
+	 * <PRE>
+	 *  RequestWrapper requestWrapper = RequestWrapper.get(request);
+	 *  String str = requestWrapper.getBody(StandardCharsets.UTF_8);
+	 * </PRE>
+	 * @param charset 文字コード
+	 * @return 受信情報文字列
+	 */
+	public String getBody(Charset charset){
+		if (request.getContentLength() < 0) return null;
+		String str = null;
+		try(InputStream in = request.getInputStream();ByteArrayOutputStream bo = new ByteArrayOutputStream()){;
+			byte[] buf = new byte[1024];
+			int length;
+			while((length=in.read(buf, 0, buf.length)) >= 0){
+				bo.write(buf, 0, length);
+			}
+			bo.flush();
+			bo.close();
+			str = new String(bo.toByteArray(), charset);
+		}catch(IOException ex){
+			Logger logger = LoggerFactory.getLogger(this.getClass());
+			logger.warn(ex.getMessage(), ex);;
+		}
+		return str;
 	}
 	/**
 	 * ２byte 文字判定.

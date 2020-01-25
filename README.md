@@ -20,7 +20,7 @@ or [Wiki Page](../../wiki)
     <dependency>
         <groupId>org.jacob</groupId>
         <artifactId>jacob</artifactId>
-        <version>2.2</version>
+        <version>2.3</version>
     </dependency>
 </dependencies>
 
