@@ -43,7 +43,7 @@ public final class JacobFilter implements Filter{
 		String applicationClassName = config.getInitParameter("applicationClassName");
 		accessControlAllowsPath = Optional.ofNullable(config.getInitParameter("accessPath")).orElse("*");
 		customheaders = Optional.ofNullable(config.getInitParameter("customHeaders")).orElse("Content-Type");
-		allowMethods = Optional.ofNullable(config.getInitParameter("allowMethods")).orElse("GET,POST,OPTIONS");
+		allowMethods = Optional.ofNullable(config.getInitParameter("allowMethods")).orElse("GET,POST,PUT,PATCH,DELETE,OPTIONS");
 		allowMethodList = Arrays.stream(allowMethods.split(","))	.map(e->e.replaceAll(" ", "")).filter(e->e.length() > 0)
 				.map(e->e.toUpperCase()).collect(Collectors.toList());
 		allowMethods = allowMethodList.stream().collect(Collectors.joining(","));
@@ -97,7 +97,7 @@ public final class JacobFilter implements Filter{
 		((RequestTranslater)jsonResponder).response = (HttpServletResponse)response;
 		String content = jsonResponder.answer(httpServletRequest);
 		if (content != null){
-			httpres.setStatus(jsonResponder.getStatus());
+			httpres.setStatus(jsonResponder.getStatus(httpServletRequest));
 			byte[] b = content.getBytes();
 			httpres.addHeader("Content-Length", Integer.toString(b.length));
 			response.setCharacterEncoding("UTF-8");

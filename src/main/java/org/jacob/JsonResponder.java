@@ -17,6 +17,8 @@ import javax.servlet.http.HttpServletRequest;
  * これは、JsonResponder 実装クラスで、
  *       &#064;Inject private ServletContext context;
  * を宣言すると自動的にこの context は ServletContext が格納される。
+ * HTTP status は、getStatus() または、getStatus(HttpServletRequest request) をオーバライドすることで
+ * 200 以外のコードを返すようにすることが可能
  * </pre>
  */
 public interface JsonResponder{
@@ -37,5 +39,13 @@ public interface JsonResponder{
 	 */
 	public default int getStatus(){
 		return 200;
+	}
+
+	/**
+	 * Override 可能 HTTP status code を返すメソッド.
+	 * @return デフォルトは、getStatus() の結果を返す。。
+	 */
+	public default int getStatus(HttpServletRequest request){
+		return getStatus();
 	}
 }

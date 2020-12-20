@@ -129,7 +129,7 @@ public final class RequestTranslater implements JsonResponder{
 				}
 			}
 			String content = jsonResponder.answer(request);
-			httpstatus = jsonResponder.getStatus();
+			httpstatus = jsonResponder.getStatus(request);
 			return content;
 		}
 		return null;
